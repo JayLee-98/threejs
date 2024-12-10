@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video with Distortion Effect</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        #video-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        #video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="video-container">
+        <video id="video" src="몸통 고정, 양팔 사용.mp4" autoplay loop muted></video>
+        <canvas id="effect-canvas"></canvas>
+    </div>
+    <script>
+        const canvas = document.getElementById('effect-canvas');
+        const ctx = canvas.getContext('2d');
+        const video = document.getElementById('video');
+
+        // Canvas 크기 설정
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // 왜곡 필터 구현
+        function drawDistortedVideo() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 영상 프레임을 캔버스에 그리기
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // 왜곡 효과 추가
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+
+            const distortionStrength = 10; // 왜곡 강도
+            for (let y = 0; y < canvas.height; y++) {
+                for (let x = 0; x < canvas.width; x++) {
+                    const offsetX = Math.sin((y / 20) + performance.now() / 1000) * distortionStrength; // x축 왜곡
+                    const sourceX = Math.min(canvas.width - 1, Math.max(0, x + offsetX));
+                    const sourceIndex = (Math.floor(sourceX) + y * canvas.width) * 4;
+                    const destIndex = (x + y * canvas.width) * 4;
+
+                    // 픽셀 데이터 이동
+                    data[destIndex] = data[sourceIndex]; // R
+                    data[destIndex + 1] = data[sourceIndex + 1]; // G
+                    data[destIndex + 2] = data[sourceIndex + 2]; // B
+                    data[destIndex + 3] = data[sourceIndex + 3]; // A
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+
+            // 애니메이션 루프
+            requestAnimationFrame(drawDistortedVideo);
+        }
+
+        // 비디오가 재생될 때 효과 시작
+        video.addEventListener('play', () => {
+            drawDistortedVideo();
+        });
+    </script>
+</body>
+</html>

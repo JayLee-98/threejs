@@ -21,6 +21,8 @@ const phonemeToScale = {
     'OO': 0.8, // 입을 동그랗게 줄임
 };
 
+
+
 // Sphere 생성 (입모양 테스트용)
 const geometry = new THREE.SphereGeometry(1, 32, 32);
 const material = new THREE.MeshStandardMaterial({ color: 0xff6347 });

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distortion Effect</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.0.4/pixi.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<script>
+    // PixiJS Application 생성
+    const app = new PIXI.Application({
+        width: window.innerWidth,
+        height: window.innerHeight,
+        backgroundColor: 0x1099bb
+    });
+    document.body.appendChild(app.view);
+
+    // 이미지 로드
+    const texture = PIXI.Texture.from('제목 없는 디자인.png');
+    const sprite = new PIXI.Sprite(texture);
+    sprite.width = app.screen.width;
+    sprite.height = app.screen.height;
+    app.stage.addChild(sprite);
+
+    // 필터 적용 (Displacement Filter)
+    const displacementTexture = PIXI.Texture.from('displacement_map.png'); // 왜곡 맵 이미지
+    const displacementSprite = new PIXI.Sprite(displacementTexture);
+    displacementSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
+    displacementSprite.scale.set(2);
+
+    const displacementFilter = new PIXI.filters.DisplacementFilter(displacementSprite);
+    app.stage.addChild(displacementSprite);
+    app.stage.filters = [displacementFilter];
+
+    // 애니메이션
+    app.ticker.add(() => {
+        displacementSprite.x += 1; // x축으로 이동
+        displacementSprite.y += 1; // y축으로 이동
+    });
+</script>
+</body>
+</html>

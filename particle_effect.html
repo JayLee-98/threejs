@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video with Particle Effect</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        #video-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        #video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="video-container">
+        <video id="video" src="몸통 고정, 양팔 사용.mp4" autoplay loop muted></video>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
+    <script>
+        // 기본 설정
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // 입자 생성
+        const particles = new THREE.BufferGeometry();
+        const particleCount = 500;
+        const positions = new Float32Array(particleCount * 3);
+
+        for (let i = 0; i < particleCount; i++) {
+            positions[i * 3] = (Math.random() - 0.5) * 5; // x
+            positions[i * 3 + 1] = (Math.random() - 0.5) * 5; // y
+            positions[i * 3 + 2] = (Math.random() - 0.5) * 5; // z
+        }
+
+        particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const particleMaterial = new THREE.PointsMaterial({
+            color: 0xffffff,
+            size: 0.05,
+            transparent: true,
+            opacity: 0.7,
+        });
+
+        const particleSystem = new THREE.Points(particles, particleMaterial);
+        scene.add(particleSystem);
+
+        // 카메라 설정
+        camera.position.z = 5;
+
+        // 애니메이션 루프
+        function animate() {
+            requestAnimationFrame(animate);
+
+            particleSystem.rotation.y += 0.001; // 입자 회전
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>
